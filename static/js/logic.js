@@ -5,6 +5,7 @@ function markerSize(magnitude) {
   return magnitude * 3;
 }
 
+// define the color of the marker based on the magnitude of the earthquake
 function markerColor(mag) {
   if (mag <= 1) {
       return "red";
@@ -21,6 +22,7 @@ function markerColor(mag) {
   };
 }
 
+// create the earthquake layer group
 var earthquake = new L.LayerGroup();
 
 // fetch the data from the link and map it
@@ -28,8 +30,10 @@ d3.json(earthquakelink, function (geodata){
 
   console.log(geodata);
 
+  //obtain the features from the json file
   L.geoJson(geodata.features, {
 
+    // create the pop-ups for the markers
     onEachFeature: function(feature, layer){
       layer.bindPopup("<h3" + feature.properties.place +
       "</h3><hr><p>" + new Date(feature.properties.time) + "</p" + "<p> Magnitude: " + feature.properties.mag + "</p")
@@ -46,6 +50,7 @@ d3.json(earthquakelink, function (geodata){
   }).addTo(earthquake);
 });
 
+//create the map
 function createMap(){
   
   var satellite = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
@@ -78,22 +83,21 @@ function createMap(){
     layers: [satellite, earthquake]
   });
   
-  
-  
+  // add base map and overlay to the big map
   L.control.layers(baseMaps, overlayMaps).addTo(map);
   
+  // customize the location of the leyend
   var legend = L.control({
     position: "bottomright"
   });
   
+
   legend.onAdd = function(map){
     var div = L.DomUtil.create("div", "info legend"),
-    grades = [0, 1, 2, 3, 4, 5],
-    labels = [];
+    grades = [0, 1, 2, 3, 4, 5];
   
    div.innerHTML += "<h4 style='margin:4px'>Magnitude</h4>"
   
-  // loop through our density intervals and generate a label with a colored square for each interval
     for (var i = 0; i < grades.length; i++) {
         div.innerHTML +=
             '<i style="background:' + markerColor(grades[i] + 1) + '"></i> ' +
@@ -106,4 +110,4 @@ function createMap(){
   legend.addTo(map);
   }
   
-  createMap();
+createMap();
